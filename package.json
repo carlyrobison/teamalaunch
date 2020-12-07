@@ -1,6 +1,9 @@
 {
-  "name": "Give & Take",
+  "name": "Give_Take",
   "version": "1.0.0",
+  "engines": {
+    "node": "14.x"
+  },
   "description": "Gray Area final project",
   "main": "app.js",
   "scripts": {
