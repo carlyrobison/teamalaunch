@@ -1,8 +1,10 @@
 <html>
 
 <head>
+  <title>Give & Take - Gray Area Showcase 2020</title>
 	<script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
 	<script src="https://unpkg.com/aframe-environment-component@1.1.0/dist/aframe-environment-component.min.js"></script>
+  <script src='js/aframe_navigation.js'></script>
 </head>
 
 <body>
@@ -10,7 +12,7 @@
 	<a-assets>
 	        <a-asset-item
           id="bowl"
-          src="models/10315_soup_plate_v2_max2011_iteration-2.obj"
+          src="../models/10315_soup_plate_v2_max2011_iteration-2.obj"
         ></a-asset-item>
 	</a-assets>
 
@@ -34,7 +36,12 @@
             rotation="270 90 0"
             scale="0.05 0.05 0.05"
             shadow="cast:true"
+            navigate-on-click="url: bowl.html"
           >
+
+          <!-- TODO make this work. or not maybe the surprise is cool 
+          event-set__enter="_event: mouseenter; color: #026fc9"
+            event-set__leave="_event: mouseleave; color: #4CC3D9" -->
           </a-entity>
 
 <!-- plane -->
@@ -46,7 +53,7 @@
         shadow="receive: true;"
       ></a-entity>
 <!-- camera -->
-<a-entity camera look-controls wasd-controls position="0 2 5"></a-entity>
+<a-entity camera look-controls cursor="rayOrigin: mouse" wasd-controls position="0 2 3"></a-entity>
 
 <!-- lights! -->
       <a-entity light="type: ambient; intensity: .2"></a-entity>
