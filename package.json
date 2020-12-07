@@ -1,0 +1,24 @@
+{
+  "name": "Give & Take",
+  "version": "1.0.0",
+  "description": "Gray Area final project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/carlyrobison/teamalaunch.git"
+  },
+  "keywords": [],
+  "author": "Carly Robison",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/carlyrobison/teamalaunch/issues"
+  },
+  "homepage": "https://github.com/carlyrobison/teamalaunch#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
