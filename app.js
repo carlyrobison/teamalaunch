@@ -10,6 +10,9 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
+//listens for when we want model files
+app.use('/models',express.static(__dirname + '/models'));
+
 // tell our app where to listen for connections
 app.listen(PORT, function() {
   console.log('listening on PORT: ' + PORT);
