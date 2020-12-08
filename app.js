@@ -1,9 +1,17 @@
 const express = require('express');
 const app     = express();
 const PORT    = process.env.PORT || 3000;
+
+// file uploading
+const fileUpload = require('express-fileupload');
+// default options
+app.use(fileUpload());
+
+// google drive apis
 const fs = require('fs');
 const readline = require('readline');
 const {google} = require('googleapis');
+
 
 // tell our app where to serve our static files (root dir)
 app.use(express.static('public'));
@@ -22,12 +30,32 @@ app.get('/bowl', function(req, res) {
 // interaction pages
 app.get('/give', function(req, res) {
 	console.log("giving");
-  res.sendFile(__dirname + '/index.html');
+  res.sendFile(__dirname + '/give.html');
 });
 
 app.get('/take', function(req, res) {
 	console.log("taking");
   res.sendFile(__dirname + '/index.html');
+});
+
+app.post('/upload', function(req, res) {
+  if (!req.files || Object.keys(req.files).length === 0) {
+    return res.status(400).send('No files were uploaded.');
+  }
+
+  console.log(req.files);
+
+  // The name of the input field (i.e. "sampleFile") is used to retrieve the uploaded file
+  let contribution = req.files.contribution;
+
+	// TODO just go straight to the google drive api
+  // Use the mv() method to place the file somewhere on your server
+  contribution.mv('./media/uploaded.jpg', function(err) {
+    if (err)
+      return res.status(500).send(err);
+
+    res.send('File uploaded!');
+  });
 });
 
 //listens for when we want model files

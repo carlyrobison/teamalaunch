@@ -12,10 +12,7 @@ var selectedContribution = -1;
 
 // interaction fxns --------------------------------------------------------
 function give() {
-  console.log("giving:", selectedContribution);
-  // httpGet('/give', function(response) {
-  //   console.log(JSON.parse(response));
-  // });
+	window.open('/give.html');
 }
 
 function take() {
