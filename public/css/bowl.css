@@ -1,0 +1,24 @@
+html, body {
+  margin: 0 auto;
+}
+
+button#give-btn {
+
+}
+
+button#take-btn {
+
+}
+
+button {
+	font-size: 36px;
+	height: 15vh;
+	width: 15vh;
+	border-radius: 1vh;
+	border: 2px solid black;
+	background: gray;
+}
+
+button:hover {
+	cursor: pointer;
+}
