@@ -10,6 +10,23 @@ app.use(express.static('public'));
 
 // define a route - what happens when people visit /
 app.get('/', function(req, res) {
+  res.sendFile(__dirname + 'index.html');
+  console.log("serving index page");
+});
+app.get('/bowl', function(req, res) {
+  res.sendFile(__dirname + 'bowl.html');
+  console.log("serving bowl page");
+});
+
+
+// interaction pages
+app.get('/give', function(req, res) {
+	console.log("giving");
+  res.sendFile(__dirname + '/index.html');
+});
+
+app.get('/take', function(req, res) {
+	console.log("taking");
   res.sendFile(__dirname + '/index.html');
 });
 
