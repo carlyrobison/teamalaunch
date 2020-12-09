@@ -57,7 +57,7 @@ app.post('/upload', function(req, res) {
 });
 
 // for the oauth flow
-app.post('/oauth', function(req, res) {
+app.get('/oauth', function(req, res) {
 	console.log("req:", req);
 });
 
