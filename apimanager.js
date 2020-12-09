@@ -17,28 +17,43 @@ const REDIRECT_URI = 'https://give-take-ga.herokuapp.com/oauth'
  * @param {getEventsCallback} callback The callback for the authorized client.
  */
 function getAccessToken(oAuth2Client, callback) {
-  const authUrl = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES,
-  });
-  console.log('Authorize this app by visiting this url:', authUrl);
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout,
-  });
-  rl.question('Enter the code from that page here: ', (code) => {
-    rl.close();
-    oAuth2Client.getToken(code, (err, token) => {
+	if (process.env.AUTH_CODE) {
+		oAuth2Client.getToken(process.env.AUTH_CODE, (err, token) => {
       if (err) return console.error('Error retrieving access token', err);
       oAuth2Client.setCredentials(token);
       // Store the token to disk for later program executions
+      console.log(token);
       fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
         if (err) return console.error(err);
         console.log('Token stored to', TOKEN_PATH);
       });
       callback(oAuth2Client);
     });
-  });
+	} else {
+	  const authUrl = oAuth2Client.generateAuthUrl({
+	    access_type: 'offline',
+	    scope: SCOPES,
+	  });
+	  console.log('Authorize this app by visiting this url:', authUrl);
+	  const rl = readline.createInterface({
+	    input: process.stdin,
+	    output: process.stdout,
+	  });
+	  rl.question('Enter the code from that page here: ', (code) => {
+	    rl.close();
+	    oAuth2Client.getToken(process.env.AUTH_CODE, (err, token) => {
+	      if (err) return console.error('Error retrieving access token', err);
+	      oAuth2Client.setCredentials(token);
+	      // Store the token to disk for later program executions
+	      console.log(token);
+	      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+	        if (err) return console.error(err);
+	        console.log('Token stored to', TOKEN_PATH);
+	      });
+	      callback(oAuth2Client);
+	    });
+    });
+	}
 }
 
 
@@ -77,7 +92,7 @@ function listFiles(auth) {
     pageSize: 10,
     fields: 'nextPageToken, files(id, name)',
   }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err);
+    if (err) return console.log('The API returned an error: ' + err + res);
     const files = res.data.files;
     if (files.length) {
       console.log('Files:');
