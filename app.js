@@ -1,6 +1,7 @@
 const express = require('express');
 const app     = express();
 const PORT    = process.env.PORT || 3000;
+const fs = require('fs');
 
 
 // I separated out all the messy google api stuff
@@ -17,11 +18,12 @@ app.use(express.static('public'));
 // define a route - what happens when people visit /
 app.get('/', function(req, res) {
   res.sendFile(__dirname + 'index.html');
-  console.log("serving index page");
+  console.log("{}{}{} serving index page");
 });
 app.get('/bowl', function(req, res) {
-  res.sendFile(__dirname + 'bowl.html');
-  console.log("serving bowl page");
+  console.log("{}{}{} serving bowl page");
+
+  res.sendFile(__dirname + '/public/bowl.html');
 });
 
 
@@ -41,19 +43,27 @@ app.post('/upload', function(req, res) {
     return res.status(400).send('No files were uploaded.');
   }
 
-  console.log(req.files);
-
-  // The name of the input field is used to retrieve the uploaded file
   let contribution = req.files.contribution;
+  console.log('{}{}{} Intended upload of ' + contribution.name);
 
-	// TODO just go straight to the google drive api
+  // mimeType check
+  // const fileSize = fs.statSync(fileName).size; // error case on too large
+
   // Use the mv() method to place the file somewhere on your server
   contribution.mv('./media/uploaded.jpg', function(err) {
     if (err)
       return res.status(500).send(err);
-
-    res.send('File uploaded!');
   });
+
+  gapi.uploadToCloud({name: contribution.name, // existing name
+  	location: './media/uploaded.jpg', // temporary storage
+  	mimeType: contribution.mimetype // mimetype
+  });
+
+	console.log('{}{}{} Upload of ' + contribution.name);
+	res.redirect('/bowl');
+
+	res.send('File was unable to be uploaded. Please try again.');
 });
 
 // ------------ HELPER LINKS BELOW HERE ---------------
@@ -65,7 +75,11 @@ app.get('/reauth', function(req, res) {
 
 // trigger listing the files in the drive
 app.get('/testapi', function(req, res) {
+	gapi.uploadToCloud({});
 	gapi.runSample();
+
+
+	// let's test that we can upload media/uploaded.jpg
 });
 
 // for the oauth flow

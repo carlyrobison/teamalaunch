@@ -49,12 +49,7 @@ function drawContributionLarger(row, col) {
 }
 
 function redrawScene() {
-	background(255);
-
-	  // draw bowl
-  fill(86, 57, 173);
-  let bowlSize = min((contributionsPerRow * contributionSize), windowHeight);
-  ellipse(contributionSize + bowlSize / 2, 10 + bowlSize/2, bowlSize, bowlSize);
+	background(86, 57, 173); // color of the bowl
 	
 	drawContributions(contributions);
 }
