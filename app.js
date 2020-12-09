@@ -56,16 +56,32 @@ app.post('/upload', function(req, res) {
   });
 });
 
+// ------------ HELPER LINKS BELOW HERE ---------------
+
+// manual reauthing if needed
+app.get('/reauth', function(req, res) {
+	gapi.getReAuthUrl(req, res);
+});
+
+// trigger listing the files in the drive
+app.get('/testapi', function(req, res) {
+	gapi.runSample();
+});
+
 // for the oauth flow
 app.get('/oauth', function(req, res) {
-	console.log("req:", req);
+	// console.log("req:", req, "\nres:", res);
+	console.log("code:", req.query.code);
+	gapi.oauth2Client.getToken(req.query.code, (err, token) => {
+	  if (err) return console.error('Error retrieving access token(s)', err);
+	  console.log("token(s):", token);
+	  gapi.oauth2Client.credentials = token;
+	});
+	res.sendFile(__dirname + '/index.html');
 });
 
 //listens for when we want model files
-app.use('/models',express.static(__dirname + '/models'));
-
-// let's do the oauth thing
-gapi.setupAPIConnection();
+app.use('/models', express.static(__dirname + '/models'));
 
 // tell our app where to listen for connections
 app.listen(PORT, function() {

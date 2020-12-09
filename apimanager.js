@@ -7,87 +7,41 @@ const {google} = require('googleapis');
 const SCOPES = ['https://www.googleapis.com/auth/drive',
 'https://www.googleapis.com/auth/photoslibrary',
 'https://mail.google.com/']
-const TOKEN_PATH = 'token.json';
 const REDIRECT_URI = 'https://give-take-ga.herokuapp.com/oauth'
 
+
+
+oauth2Client = new google.auth.OAuth2(
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
+  REDIRECT_URI
+);
+
+oauth2Client.setCredentials({
+	refresh_token: process.env.REFRESH_TOKEN
+});
+
+// set auth as a global default
+google.options({
+  auth: oauth2Client
+});
+
 /**
- * Get and store new token after prompting for user authorization, and then
- * execute the given callback with the authorized OAuth2 client.
- * @param {google.auth.OAuth2} oAuth2Client The OAuth2 client to get token for.
- * @param {getEventsCallback} callback The callback for the authorized client.
+ * Return an auth URL (in case we mess up and need to do it again)
  */
-function getAccessToken(oAuth2Client, callback) {
-	if (process.env.AUTH_CODE) {
-		oAuth2Client.getToken(process.env.AUTH_CODE, (err, token) => {
-      if (err) return console.error('Error retrieving access token', err);
-      oAuth2Client.setCredentials(token);
-      // Store the token to disk for later program executions
-      console.log(token);
-      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-        if (err) return console.error(err);
-        console.log('Token stored to', TOKEN_PATH);
-      });
-      callback(oAuth2Client);
+function getReAuthUrl(req, res) {
+    // grab the url that will be used for authorization
+    const authorizeUrl = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: SCOPES.join(' '),
     });
-	} else {
-	  const authUrl = oAuth2Client.generateAuthUrl({
-	    access_type: 'offline',
-	    scope: SCOPES,
-	  });
-	  console.log('Authorize this app by visiting this url:', authUrl);
-	  const rl = readline.createInterface({
-	    input: process.stdin,
-	    output: process.stdout,
-	  });
-	  rl.question('Enter the code from that page here: ', (code) => {
-	    rl.close();
-	    oAuth2Client.getToken(process.env.AUTH_CODE, (err, token) => {
-	      if (err) return console.error('Error retrieving access token', err);
-	      oAuth2Client.setCredentials(token);
-	      // Store the token to disk for later program executions
-	      console.log(token);
-	      fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-	        if (err) return console.error(err);
-	        console.log('Token stored to', TOKEN_PATH);
-	      });
-	      callback(oAuth2Client);
-	    });
-    });
-	}
+    console.log('Authorize this app by visiting this url:', authorizeUrl);
+    res.send('Authorize this app by visiting this url: ' + authorizeUrl);
 }
 
-
-
-/**
- * Create an OAuth2 client with the given credentials, and then execute the
- * given callback function.
- * @param {Object} credentials The authorization client credentials.
- * @param {function} callback The callback to call with the authorized client.
- */
-function authorize(callback) {
-  const oAuth2Client = new google.auth.OAuth2(
-      process.env.CLIENT_ID, process.env.CLIENT_SECRET, REDIRECT_URI);
-
-  // Check if we have previously stored a token.
-  if (!process.env.ACCESS_TOKEN) {
-  	return getAccessToken(oAuth2Client, callback);
-  } else {
-  	oAuth2Client.setCredentials(process.env.ACCESS_TOKEN);
-    callback(oAuth2Client);
-  }
-}
-
-function setupAPIConnection() {
-	// Authorize a client with credentials, then call the Google Drive API.
-	authorize(listFiles);
-}
-
-/**
- * Lists the names and IDs of up to 10 files.
- * @param {google.auth.OAuth2} auth An authorized OAuth2 client.
- */
-function listFiles(auth) {
-  const drive = google.drive({version: 'v3', auth});
+function runSample() {
+  // list files
+  const drive = google.drive({version: 'v3'});
   drive.files.list({
     pageSize: 10,
     fields: 'nextPageToken, files(id, name)',
@@ -105,4 +59,6 @@ function listFiles(auth) {
   });
 }
 
-module.exports.setupAPIConnection = setupAPIConnection;
+module.exports.runSample = runSample;
+module.exports.oauth2Client = oauth2Client;
+module.exports.getReAuthUrl = getReAuthUrl;
