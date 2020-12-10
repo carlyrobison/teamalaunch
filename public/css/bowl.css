@@ -1,24 +1,56 @@
-html, body {
+html, body, div {
   margin: 0 auto;
 }
 
-button#give-btn {
-
+body {
+	background: #5639ad;
 }
 
-button#take-btn {
-
+.row {
+	display: flex;
+	flex-direction: space-between;
+	margin:10px;
 }
 
-button {
+button#give {
 	font-size: 36px;
-	height: 15vh;
-	width: 15vh;
-	border-radius: 1vh;
+	height: 200px;
+	width: 200px;
+	border-radius: 1vw;
 	border: 2px solid black;
 	background: gray;
+	/*display: flexbox;*/
+	padding: 10px;
 }
 
-button:hover {
-	cursor: pointer;
+button#take {
+	font-size: 36px;
+	height: 200px;
+	width: 200px;
+	border-radius: 1vw;
+	border: 2px solid black;
+	background: gray;
+	/*display: flexbox;*/
+	padding: 1vw;
+}
+
+#bowl {
+	display: flex;
+}
+
+.contribution {
+	background: #faf9f5;
+	height: 200px;
+	width: 200px;
+}
+
+.contribution-big {
+	background: #faf9f5;
+	height: 350px;
+	width: 350px;
+}
+
+iframe {
+	width: 80%;
+	height: 80%;
 }

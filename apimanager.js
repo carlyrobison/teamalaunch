@@ -68,52 +68,15 @@ function uploadToCloud(opts) {
 	});
 }
 
-
 /**
- * Get the IDs of the latest N images in the BOWL folder
- * TODO: filter by images
- * TODO: read and parse metadata
- * opts: num_results
+ * Download AN IMAGE how hard can this be
  */
-function listFiles(opts) {
-// list files
-  const drive = google.drive({version: 'v3'});
-  drive.files.list({
-    fields: 'nextPageToken, files(id, name, mimeType)',
-    orderBy: 'modifiedTime desc',
-    q: 'parent:1LajQ89n9DcEFY0O7cWO73VcMQ83IcTCW',
-    pageSize: opts.num_results,
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err + res);
-    const files = res.data.files;
-    if (files.length) {
-      console.log('Files:');
-      files.map((file) => {
-        console.log(`${file.name} (${file.id})`);
-      });
-      return files;
-    } else {
-      console.log('No files found.');
-    }
-  });
-}
-
-/**
- * Download the latest N images in the BOWL folder
- * TODO: filter by images
- * TODO: read and parse metadata
- * TODO: store locally?
- * TODO: 
- */
-function downloadImages(opts) {
-	// For converting document formats, and for downloading template
-  // documents, see the method drive.files.export():
-  // https://developers.google.com/drive/api/v3/manage-downloads
-  return drive.files
-    .get({fileId, alt: 'media'}, {responseType: 'stream'})
+function downloadImage(imgI) {
+	return drive.files
+    .get({fileId: imgI.id, alt: 'media'}, {responseType: 'stream'})
     .then(res => {
       return new Promise((resolve, reject) => {
-        const filePath = path.join(os.tmpdir(), uuid.v4());
+        const filePath = './public/media/' + imgI.id + imgI.name;
         console.log(`writing to ${filePath}`);
         const dest = fs.createWriteStream(filePath);
         let progress = 0;
@@ -127,42 +90,94 @@ function downloadImages(opts) {
             console.error('Error downloading file.');
             reject(err);
           })
-          .on('data', d => {
-            progress += d.length;
-            if (process.stdout.isTTY) {
-              process.stdout.clearLine();
-              process.stdout.cursorTo(0);
-              process.stdout.write(`Downloaded ${progress} bytes`);
-            }
-          })
           .pipe(dest);
       });
     });
-
-
-  const fileMetadata = {
-  	'name': opts.name || 'photo.jpg'
-	};
-	const media = {
-	  mimeType: 'image/jpeg', // maybe make this an opt?
-	  body: fs.createReadStream(opts.location || 'media/uploaded.jpg')
-	};
-	drive.files.create({
-	  resource: fileMetadata,
-	  media: media,
-	  fields: 'id'
-	}, function (err, file) {
-	  if (err) {
-	    // Handle error
-	    console.error(err);
-	    return 'Upload did not work, try again.';
-	  } else {
-	    console.log('File Id: ', file.id);
-	    // console.log('file:', file);
-	    return 'Success!';
-	  }
-	});
 }
+
+/**
+ * SendMail
+ */
+function sendMail(opts) {
+	opts.email
+
+// You can use UTF-8 encoding for the subject using the method below.
+  // You can also just use a plain string if you don't need anything fancy.
+  const subject = 'Your image from Give & Take';
+  const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
+  const messageParts = [
+    'From: Give & Take <giveandtakega2020@gmail.com>',
+    `To: You <${opts.email}>`,
+    'Content-Type: text/html; charset=utf-8',
+    'MIME-Version: 1.0',
+    `Subject: ${utf8Subject}`,
+    '',
+    `Here's the link to your image: ${opts.link}`,
+  ];
+  const message = messageParts.join('\n');
+
+  // The body needs to be base64url encoded.
+  const encodedMessage = Buffer.from(message)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedMessage,
+    },
+  }, (err, res) => {
+  	if (err) {
+  		console.log('The API returned an error: ' + err + res);
+    	opts.res.error('API error');
+  	} else {
+  		console.log(res.data);
+  		opts.res.send(res.data);
+  	}
+  });
+}
+
+/**
+ * Get the IDs of the latest N images in the BOWL folder
+ * TODO: filter by images
+ * TODO: read and parse metadata
+ * opts: num_results
+ */
+function updateFileList(opts) {
+// list files
+  drive.files.list({
+    fields: 'files(id, name, mimeType, webContentLink, webViewLink, iconLink, thumbnailLink, fullFileExtension)',
+    orderBy: 'modifiedTime desc',
+    q: "'" + BOWL_FOLDER_ID + "' in parents",
+    pageSize: opts.max_results || 24,
+  }, (err, res) => {
+    if (err) {
+    	console.log('The API returned an error: ' + err + res);
+    	opts.res.error('API error');
+    }
+    const files = res.data.files;
+    if (files.length) {
+      console.log('Files:');
+      files.map((file) => {
+        console.log(`${file.name} (`, file, `)`);
+      });
+      // downloadImages(files).then(function (values) {
+      // 	console.log('got values', values);
+      // 	console.log('okay, sending response');
+      	opts.res.send(files);
+      // }).resolve();
+      console.log('downloaded');
+      // download and save all of the files
+    } else {
+      console.log('No files found.');
+      opts.res.error('No files found');
+    }
+  });
+}
+
+
 
 function runSample() {
   // list files
@@ -188,4 +203,5 @@ module.exports.runSample = runSample;
 module.exports.oauth2Client = oauth2Client;
 module.exports.getReAuthUrl = getReAuthUrl;
 module.exports.uploadToCloud = uploadToCloud;
-module.exports.listFiles = listFiles;
+module.exports.updateFileList = updateFileList;
+module.exports.sendMail = sendMail;

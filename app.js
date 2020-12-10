@@ -3,7 +3,6 @@ const app     = express();
 const PORT    = process.env.PORT || 3000;
 const fs = require('fs');
 
-
 // I separated out all the messy google api stuff
 var gapi = require('./apimanager');
 
@@ -29,13 +28,30 @@ app.get('/bowl', function(req, res) {
 
 // interaction pages
 app.get('/give', function(req, res) {
-	console.log("giving");
+	console.log("{}{}{} serving giving page");
   res.sendFile(__dirname + '/give.html');
 });
 
+// for now take a random one
 app.get('/take', function(req, res) {
-	console.log("taking");
-  res.sendFile(__dirname + '/index.html');
+	console.log("{}{}{} taking");
+  res.sendFile(__dirname + '/take.html');
+});
+
+// for now take a random one
+app.post('/send', function(req, res) {
+	console.log("{}{}{} sending");
+	gapi.sendMail({email: req.email, link: 'https://drive.google.com/file/d/1BYl92BWZoAydnnBJmXfDTLGVf1WU0NDp/view?usp=sharing',
+		res: res});
+
+	console.log('{}{}{} Sent mail');
+	res.redirect('/bowl');
+})
+
+// interaction pages
+app.get('/loadimages', function(req, res) {
+	console.log("loading images");
+  gapi.updateFileList({num_results: req.query.num_results, res: res});
 });
 
 app.post('/upload', function(req, res) {
@@ -75,11 +91,7 @@ app.get('/reauth', function(req, res) {
 
 // trigger listing the files in the drive
 app.get('/testapi', function(req, res) {
-	gapi.uploadToCloud({});
-	gapi.runSample();
-
-
-	// let's test that we can upload media/uploaded.jpg
+	gapi.sendMail({email: 'rodtel314@gmail.com', res: res});
 });
 
 // for the oauth flow
