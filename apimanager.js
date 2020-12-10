@@ -9,6 +9,7 @@ const SCOPES = ['https://www.googleapis.com/auth/drive',
 'https://mail.google.com/']
 const REDIRECT_URI = 'https://give-take-ga.herokuapp.com/oauth'
 const drive = google.drive('v3');
+const gmail = google.gmail('v1');
 const BOWL_FOLDER_ID = '1LajQ89n9DcEFY0O7cWO73VcMQ83IcTCW'
 const TAKEN_FOLDER_ID = '1R28PnSZ6wi7g0zO2FZGJ1odupXOVutkA'
 
