@@ -41,7 +41,9 @@ app.get('/take', function(req, res) {
 // for now take a random one
 app.post('/send', function(req, res) {
 	console.log("{}{}{} sending");
-	gapi.sendMail({email: req.email, link: 'https://drive.google.com/file/d/1BYl92BWZoAydnnBJmXfDTLGVf1WU0NDp/view?usp=sharing',
+	console.log(req.body.email);
+
+	gapi.sendMail({email: req.body.email, link: 'https://drive.google.com/file/d/1BYl92BWZoAydnnBJmXfDTLGVf1WU0NDp/view?usp=sharing',
 		res: res});
 
 	console.log('{}{}{} Sent mail');
@@ -91,7 +93,8 @@ app.get('/reauth', function(req, res) {
 
 // trigger listing the files in the drive
 app.get('/testapi', function(req, res) {
-	gapi.sendMail({email: 'rodtel314@gmail.com', res: res});
+	gapi.sendMail({email: 'rodtel314@gmail.com', link: 'https://drive.google.com/file/d/1BYl92BWZoAydnnBJmXfDTLGVf1WU0NDp/view?usp=sharing',
+	 res: res});
 });
 
 // for the oauth flow

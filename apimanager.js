@@ -107,7 +107,7 @@ function sendMail(opts) {
   const utf8Subject = `=?utf-8?B?${Buffer.from(subject).toString('base64')}?=`;
   const messageParts = [
     'From: Give & Take <giveandtakega2020@gmail.com>',
-    `To: You <${opts.email}>`,
+    `To: <${opts.email}>`,
     'Content-Type: text/html; charset=utf-8',
     'MIME-Version: 1.0',
     `Subject: ${utf8Subject}`,
@@ -159,10 +159,10 @@ function updateFileList(opts) {
     }
     const files = res.data.files;
     if (files.length) {
-      console.log('Files:');
-      files.map((file) => {
-        console.log(`${file.name} (${file.id})`);
-      });
+      console.log('Files:', files.length);
+      // files.map((file) => {
+      //   console.log(`${file.name} (${file.id})`);
+      // });
       	opts.res.send(files);
     } else {
       console.log('No files found.');
