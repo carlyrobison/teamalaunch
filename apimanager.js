@@ -148,7 +148,7 @@ function sendMail(opts) {
 function updateFileList(opts) {
 // list files
   drive.files.list({
-    fields: 'files(id, name, mimeType, webContentLink, webViewLink, iconLink, thumbnailLink, fullFileExtension)',
+    fields: 'files(id, name, webViewLink)',
     orderBy: 'modifiedTime desc',
     q: "'" + BOWL_FOLDER_ID + "' in parents",
     pageSize: opts.max_results || 24,
@@ -161,15 +161,9 @@ function updateFileList(opts) {
     if (files.length) {
       console.log('Files:');
       files.map((file) => {
-        console.log(`${file.name} (`, file, `)`);
+        console.log(`${file.name} (${file.id})`);
       });
-      // downloadImages(files).then(function (values) {
-      // 	console.log('got values', values);
-      // 	console.log('okay, sending response');
       	opts.res.send(files);
-      // }).resolve();
-      console.log('downloaded');
-      // download and save all of the files
     } else {
       console.log('No files found.');
       opts.res.error('No files found');
