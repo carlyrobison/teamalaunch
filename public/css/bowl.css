@@ -14,8 +14,8 @@ body {
 
 button#give {
 	font-size: 36px;
-	height: 200px;
-	width: 200px;
+	height: 15vw;
+	width: 15vw;
 	border-radius: 1vw;
 	border: 2px solid black;
 	background: gray;
@@ -25,8 +25,8 @@ button#give {
 
 button#take {
 	font-size: 36px;
-	height: 200px;
-	width: 200px;
+	height: 15vw;
+	width: 15vw;
 	border-radius: 1vw;
 	border: 2px solid black;
 	background: gray;
@@ -35,22 +35,32 @@ button#take {
 }
 
 #bowl {
-	display: flex;
+	display:relative;
 }
 
 .contribution {
 	background: #faf9f5;
-	height: 200px;
-	width: 200px;
+	height: 80%;
+	width: 80%;
 }
 
-.contribution-big {
+.contributionImage {
+	height: 100%;
+	width: 100%;
 	background: #faf9f5;
-	height: 350px;
-	width: 350px;
 }
 
 iframe {
-	width: 80%;
-	height: 80%;
+	src: "https://drive.google.com/file/d/1zA-1v88aPNB1QH5o-7DNYDvQziCAhxwP/view";
+	width: 100%;
+	height: 100%;
+}
+
+button.contribution {
+	height: 20vw;
+	width: 20vw;
+}
+
+button:hover {
+	cursor: pointer;
 }
